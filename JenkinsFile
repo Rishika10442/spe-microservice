@@ -46,7 +46,7 @@ pipeline {
 
                         dir("${svc.name}") {
                             // Ensure the JAR is built
-                            sh "./mvnw clean package -DskipTests"
+                            sh "./mvn clean package -DskipTests"
 
                             // Build Docker image
                             sh "docker build -t ${imageName} ."
