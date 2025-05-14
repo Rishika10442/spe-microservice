@@ -2,9 +2,17 @@ pipeline {
     agent any
 
     stages {
-        stage('Initialize') {
+        stage('Clone Infra Repo') {
             steps {
-                echo 'Jenkins pipeline is working!'
+                git branch: 'main',
+                    url: 'https://github.com/Rishika10442/spe-microservice.git',
+                    credentialsId: 'github-token'
+            }
+        }
+
+        stage('Verify Checkout') {
+            steps {
+                sh 'ls -la'
             }
         }
     }
