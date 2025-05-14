@@ -39,9 +39,9 @@ pipeline {
                     def services = [
                         [name: 'catalogue-service', port: '8082'],
                         [name: 'user-service', port: '8000'],
-                        [name: 'order-service', port: '8086'],
-                        [name: 'borrow-service', port: '8084'],
-                        [name: 'review-service', port: '8085'],
+                        [name: 'order_service', port: '8086'],
+                        [name: 'borrow_service', port: '8084'],
+                        [name: 'review_service', port: '8085'],
                         [name: 'gateway-service', port: '8081']
                     ]
 
