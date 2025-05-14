@@ -19,6 +19,11 @@ pipeline {
                 sh 'ls -la'
             }
         }
+        stage('Check Maven Version') {
+            steps {
+                sh 'mvn -version'
+            }
+        }
 
         stage('Login to Docker Hub') {
             steps {
@@ -46,7 +51,7 @@ pipeline {
 
                         dir("${svc.name}") {
                             // Ensure the JAR is built
-                            sh "./mvn clean package -DskipTests"
+                            sh "mvn clean package -DskipTests"
 
                             // Build Docker image
                             sh "docker build -t ${imageName} ."
