@@ -1,0 +1,43 @@
+server:
+  port: 8081   # Gateway will run on 8080
+
+spring:
+  main:
+    web-application-type: reactive
+  application:
+    name: gateway-service
+
+  cloud:
+    gateway:
+      globalcors:
+        cors-configurations:
+          '[/**]':
+            allowed-origins: "*"
+            allowed-methods: "*"
+            allowed-headers: "*"
+            allow-credentials: false
+      routes:
+        - id: user-service
+          uri: http://localhost:8000 # Your user-service is running locally on 8081
+          predicates:
+            - Path=/user/**  # When URL starts with /user/ --> forward to user-service
+
+        - id: catalog-service
+          uri: http://localhost:8082
+          predicates:
+            - Path=/catalogue/**
+
+        - id: borrow-service
+          uri: http://localhost:8084
+          predicates:
+            - Path=/borrow/**
+
+        - id: review-service
+          uri: http://localhost:8085
+          predicates:
+            - Path=/review/**
+
+        - id: order-service
+          uri: http://localhost:8086
+          predicates:
+            - Path=/orders/**
