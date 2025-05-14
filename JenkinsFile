@@ -41,7 +41,7 @@ pipeline {
                         [name: 'user-service', port: '8000'],
                         [name: 'order_service', port: '8086'],
                         [name: 'borrow_service', port: '8084'],
-                        [name: 'review_service', port: '8085'],
+                        [name: 'review_serivce', port: '8085'],
                         [name: 'gateway-service', port: '8081']
                     ]
 
