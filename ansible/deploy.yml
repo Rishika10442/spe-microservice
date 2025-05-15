@@ -7,8 +7,6 @@
     dockerhub_user: "rishika10442"
     k8s_folder: "../k8s"
     services:
-      - image_name: mysql
-        k8s_name: mysql
       - image_name: catalogue-service
         k8s_name: catalogue-service
       - image_name: user-service
@@ -48,6 +46,19 @@
       debug:
         msg: "{{ item.stdout }}"
       loop: "{{ docker_pull_output.results }}"
+
+    - name: Deploy MySQL
+      shell: kubectl apply -f {{ k8s_folder }}/mysql.yaml
+
+    - name: Wait for MySQL pod to be ready
+      shell: |
+        kubectl wait --for=condition=ready pod -l app=mysql --timeout=120s
+      register: mysql_wait
+      retries: 3
+      delay: 10
+      until: mysql_wait.rc == 0
+
+
 
     - name: Apply Logstash config map
       shell: kubectl apply -f {{ k8s_folder }}/logstash-config.yaml
