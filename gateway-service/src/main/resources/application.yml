@@ -43,7 +43,7 @@
 #            - Path=/orders/**
 
 server:
-  port: 8080   # Gateway itself runs on 8080
+  port: 8081  # Gateway itself runs on 8080
 
 spring:
   main:
