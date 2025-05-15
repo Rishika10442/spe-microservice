@@ -127,6 +127,27 @@ pipeline {
 //               }
 //           }
 //       }
+            stage('Build and Push Docker Image: Gateway Only') {
+                steps {
+                    script {
+                        def services = [
+                            [name: 'gateway-service', port: '8081']
+                        ]
+
+                        services.each { svc ->
+                            def imageName = "${DOCKERHUB_USERNAME}/${svc.name}:latest"
+                            echo "Building and pushing ${svc.name} as ${imageName}"
+
+                            dir(svc.name) {
+                                sh "mvn clean package -DskipTests"
+                                sh "docker build -t ${imageName} ."
+                                sh "docker push ${imageName}"
+                            }
+                        }
+                    }
+                }
+            }
+
 
 
         stage('Deploy to Kubernetes via Ansible') {
