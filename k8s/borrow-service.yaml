@@ -10,7 +10,7 @@ spec:
   template:
     metadata:
       labels:
-        app: borrow_service
+        app: borrow-service
     spec:
       containers:
       - name: user
