@@ -16,7 +16,7 @@
       - image_name: borrow_service
         k8s_name: borrow-service
       - image_name: review_serivce
-        k8s_name: review-service
+        k8s_name: review-serivce
       - image_name: gateway-service
         k8s_name: gateway-service
 
