@@ -105,4 +105,17 @@ public class OrderController {
             ));
         }
     }
+
+    @GetMapping("/items/{userId}")
+    public ResponseEntity<?> getCartItems(@PathVariable Long userId, @RequestHeader("Authorization") String jwtToken) {
+        Map<String, Object> response = cartItemService.getCartItems(userId, jwtToken);
+        return ResponseEntity.ok(response);
+    }
+
+    @GetMapping("/remove/{cartItemId}")
+    public ResponseEntity<?> removeFromCart(@PathVariable Long cartItemId) {
+        Map<String, Object> response = cartItemService.removeFromCart(cartItemId);
+        return ResponseEntity.ok(response);
+    }
+
 }

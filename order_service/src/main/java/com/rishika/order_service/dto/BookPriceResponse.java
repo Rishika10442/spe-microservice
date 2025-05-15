@@ -7,4 +7,5 @@ import lombok.Data;
 public class BookPriceResponse {
     private boolean success;
     private Double price;
+    private String name;
 }

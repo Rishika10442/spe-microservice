@@ -18,8 +18,7 @@ import org.springframework.web.client.RestTemplate;
 
 import java.awt.print.Book;
 import java.time.LocalDateTime;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -56,8 +55,10 @@ public class CartItemService {
             BookPriceResponse bookPriceResponse = bookResponse.getBody();
             Double bookPrice = 0.0;
 
+
             if (bookPriceResponse != null && bookPriceResponse.isSuccess()) {
                 bookPrice = bookPriceResponse.getPrice();
+
             } else {
                 response.put("success", false);
                 response.put("message", "Failed to fetch price from Catalogue service");
@@ -96,11 +97,38 @@ public class CartItemService {
 
             // Save the updated cart
             cartRepository.save(cart);
+            List<CartItem> cartItems = cartItemRepository.findByCart_CartId(cart.getCartId());
+            List<Map<String, Object>> enrichedCartItems = new ArrayList<>();
 
-            // Step 4: Return the response with cart items and total price
+            for (CartItem item : cartItems) {
+                ResponseEntity<BookPriceResponse> detailResponse = restTemplate.exchange(
+                        CATALOG_SERVICE_URL + item.getBookId(),
+                        HttpMethod.GET,
+                        entity,
+                        BookPriceResponse.class
+                );
+
+                String bookName = "";
+                if (detailResponse.getBody() != null && detailResponse.getBody().isSuccess()) {
+                    bookName = detailResponse.getBody().getName();
+                }
+
+                Map<String, Object> itemMap = new HashMap<>();
+                itemMap.put("cartItemId", item.getCartItemId());
+                itemMap.put("bookId", item.getBookId());
+                itemMap.put("userId", item.getUserId());
+                itemMap.put("quantity", item.getQuantity());
+                itemMap.put("price", item.getPrice());
+                itemMap.put("addedAt", item.getAddedAt());
+                itemMap.put("bookName", bookName);
+                itemMap.put("cart", item.getCart());
+
+                enrichedCartItems.add(itemMap);
+            }
+
             response.put("success", true);
-            response.put("cartItems", cartItemRepository.findByCart_CartId(cart.getCartId()));
             response.put("totalPrice", cart.getTotalPrice());
+            response.put("cartItems", enrichedCartItems);
 
         } catch (Exception e) {
             response.put("success", false);
@@ -160,5 +188,109 @@ public class CartItemService {
         return response;
     }
 
+
+
+    public Map<String, Object> getCartItems(Long userId, String jwtToken) {
+        Map<String, Object> response = new HashMap<>();
+        String CATALOG_SERVICE_URL = "http://localhost:8081/catalogue/book-details/";
+
+        try {
+            // Step 1: Get cart for user
+            Optional<Cart> optionalCart = cartRepository.findByUserId(userId);
+            if (optionalCart.isEmpty()) {
+                response.put("success", true);
+                response.put("totalPrice", 0.0);
+                response.put("cartItems", List.of());
+                return response;
+            }
+
+            Cart cart = optionalCart.get();
+
+            // Step 2: Fetch all items for the cart
+            List<CartItem> cartItems = cartItemRepository.findByCart_CartId(cart.getCartId());
+
+            // Step 3: Prepare enriched cart items
+            HttpHeaders headers = new HttpHeaders();
+            headers.set("Authorization", jwtToken);
+            HttpEntity<String> entity = new HttpEntity<>(headers);
+
+            List<Map<String, Object>> enrichedCartItems = new ArrayList<>();
+
+            for (CartItem item : cartItems) {
+                ResponseEntity<BookPriceResponse> detailResponse = restTemplate.exchange(
+                        CATALOG_SERVICE_URL + item.getBookId(),
+                        HttpMethod.GET,
+                        entity,
+                        BookPriceResponse.class
+                );
+
+                String bookName = "";
+                if (detailResponse.getBody() != null && detailResponse.getBody().isSuccess()) {
+                    bookName = detailResponse.getBody().getName();
+                }
+
+                Map<String, Object> itemMap = new HashMap<>();
+                itemMap.put("cartItemId", item.getCartItemId());
+                itemMap.put("bookId", item.getBookId());
+                itemMap.put("userId", item.getUserId());
+                itemMap.put("quantity", item.getQuantity());
+                itemMap.put("price", item.getPrice());
+                itemMap.put("addedAt", item.getAddedAt());
+                itemMap.put("bookName", bookName);
+                itemMap.put("cart", item.getCart());
+
+                enrichedCartItems.add(itemMap);
+            }
+
+            response.put("success", true);
+            response.put("totalPrice", cart.getTotalPrice());
+            response.put("cartItems", enrichedCartItems);
+
+        } catch (Exception e) {
+            response.put("success", false);
+            response.put("message", "An error occurred while fetching cart items: " + e.getMessage());
+        }
+
+        return response;
+    }
+
+
+    public Map<String, Object> removeFromCart(Long cartItemId) {
+        Map<String, Object> response = new HashMap<>();
+
+        try {
+            Optional<CartItem> optionalItem = cartItemRepository.findById(cartItemId);
+            if (optionalItem.isEmpty()) {
+                response.put("success", false);
+                response.put("message", "Cart item not found");
+                return response;
+            }
+
+            CartItem cartItem = optionalItem.get();
+            Cart cart = cartItem.getCart();
+
+            // Deduct the item's price from cart total
+            double itemPrice = cartItem.getPrice(); // this is already quantity-adjusted
+            double newTotal = cart.getTotalPrice() - itemPrice;
+
+            // Delete the cart item
+            cartItemRepository.delete(cartItem);
+
+            // Update cart total price and save
+            cart.setTotalPrice(Math.max(newTotal, 0.0)); // prevent negative price
+            cart.setUpdatedAt(LocalDateTime.now());
+            cartRepository.save(cart);
+
+            response.put("success", true);
+            response.put("message", "Item removed successfully");
+            response.put("newTotalPrice", cart.getTotalPrice());
+
+        } catch (Exception e) {
+            response.put("success", false);
+            response.put("message", "Error while removing item: " + e.getMessage());
+        }
+
+        return response;
+    }
 
 }

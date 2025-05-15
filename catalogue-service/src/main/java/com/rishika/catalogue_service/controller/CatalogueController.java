@@ -105,16 +105,43 @@ public class CatalogueController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorResponse);
         }
     }
+//
+//    @GetMapping("/price/{bookId}")
+//    public ResponseEntity<?> getBookPrice(@PathVariable Long bookId) {
+//        try {
+//            Optional<Book> optionalBook = bookRepository.findById(bookId);
+//            if (optionalBook.isPresent()) {
+//                Integer price = optionalBook.get().getPrice();
+//                return ResponseEntity.ok(Map.of(
+//                        "success", true,
+//                        "price", price
+//                ));
+//            } else {
+//                return ResponseEntity.status(404).body(Map.of(
+//                        "success", false,
+//                        "message", "Book not found"
+//                ));
+//            }
+//        } catch (Exception e) {
+//            return ResponseEntity.status(500).body(Map.of(
+//                    "success", false,
+//                    "message", "Error fetching price: " + e.getMessage()
+//            ));
+//        }
+//    }
 
     @GetMapping("/price/{bookId}")
     public ResponseEntity<?> getBookPrice(@PathVariable Long bookId) {
         try {
             Optional<Book> optionalBook = bookRepository.findById(bookId);
             if (optionalBook.isPresent()) {
-                Integer price = optionalBook.get().getPrice();
+                Book book = optionalBook.get();
+                Integer price = book.getPrice();
+                String name = book.getTitle(); // assuming `name` is the field for book name
                 return ResponseEntity.ok(Map.of(
                         "success", true,
-                        "price", price
+                        "price", price,
+                        "name", name
                 ));
             } else {
                 return ResponseEntity.status(404).body(Map.of(
@@ -126,6 +153,31 @@ public class CatalogueController {
             return ResponseEntity.status(500).body(Map.of(
                     "success", false,
                     "message", "Error fetching price: " + e.getMessage()
+            ));
+        }
+    }
+
+    @GetMapping("/book-details/{bookId}")
+    public ResponseEntity<?> getBookDetails(@PathVariable Long bookId) {
+        try {
+            Optional<Book> optionalBook = bookRepository.findById(bookId);
+            if (optionalBook.isPresent()) {
+                Book book = optionalBook.get();
+                return ResponseEntity.ok(Map.of(
+                        "success", true,
+                        "price", book.getPrice(),
+                        "name", book.getTitle()
+                ));
+            } else {
+                return ResponseEntity.status(404).body(Map.of(
+                        "success", false,
+                        "message", "Book not found"
+                ));
+            }
+        } catch (Exception e) {
+            return ResponseEntity.status(500).body(Map.of(
+                    "success", false,
+                    "message", "Error fetching book details: " + e.getMessage()
             ));
         }
     }
