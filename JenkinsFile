@@ -148,7 +148,7 @@ pipeline {
 //                 }
 //             }
 //
-
+//as
 
         stage('Deploy to Kubernetes via Ansible') {
             steps {
