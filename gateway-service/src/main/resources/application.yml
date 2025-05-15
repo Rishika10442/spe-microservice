@@ -62,7 +62,7 @@ spring:
             allow-credentials: false
       routes:
         - id: user-service
-          uri: http://user-service:8081
+          uri: http://user-service:8000
           predicates:
             - Path=/user/**
 
