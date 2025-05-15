@@ -7,6 +7,8 @@
     dockerhub_user: "rishika10442"
     k8s_folder: "../k8s"
     services:
+      - image_name: mysql
+        k8s_name: mysql
       - image_name: catalogue-service
         k8s_name: catalogue-service
       - image_name: user-service
