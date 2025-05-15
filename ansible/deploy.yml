@@ -19,6 +19,12 @@
         k8s_name: review-serivce
       - image_name: gateway-service
         k8s_name: gateway-service
+      - image_name: elasticsearch
+        k8s_name: elasticsearch
+      - image_name: logstash
+        k8s_name: logstash
+      - image_name: kibana
+        k8s_name: kibana
 
   tasks:
     - name: Check if Minikube is running
@@ -41,11 +47,18 @@
         msg: "{{ item.stdout }}"
       loop: "{{ docker_pull_output.results }}"
 
+    - name: Apply Logstash config map
+      shell: kubectl apply -f {{ k8s_folder }}/logstash-config.yaml
+
+
     - name: Apply Kubernetes YAML manifests per service
       shell: kubectl apply -f {{ k8s_folder }}/{{ item.k8s_name }}.yaml
       loop: "{{ services }}"
       register: kubectl_apply
       failed_when: kubectl_apply.rc != 0 and 'already exists' not in kubectl_apply.stderr
+
+
+
 
     - name: Restart deployments to pull new images
       shell: kubectl rollout restart deployment/{{ item.k8s_name }}

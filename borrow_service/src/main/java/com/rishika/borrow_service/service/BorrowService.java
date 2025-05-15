@@ -28,8 +28,8 @@ public class BorrowService {
     private RestTemplate restTemplate;
 
     // These will go through API Gateway
-    private final String USER_SERVICE_URL = "http://localhost:8081/user/";
-    private final String BOOK_SERVICE_URL = "http://localhost:8081/catalogue/booksById/";
+    private final String USER_SERVICE_URL = "http://user-service:8000/user/";
+    private final String BOOK_SERVICE_URL = "http://catalogue-service:8082/catalogue/booksById/";
 
     public Map<String, Object> addBorrow(Long userId, Long bookId, String jwtToken) {
         Map<String, Object> response = new HashMap<>();
@@ -87,7 +87,7 @@ public class BorrowService {
 
     public Map<String, Object> getBorrowsByUser(Long userId, String jwtToken) {
         Map<String, Object> response = new HashMap<>();
-        String BOOK_URL = "http://localhost:8081/catalogue/fetch-multiple";
+        String BOOK_URL = "http://catalogue-service:8082/catalogue/fetch-multiple";
         try {
             List<Borrow> borrows = borrowRepository.findByUserId(userId);
             borrows.sort(Comparator.comparing(Borrow::getIsReturned));
