@@ -15,6 +15,7 @@ spec:
       containers:
         - name: user
           image: rishika10442/order_service:latest
+          imagePullPolicy: Always
           ports:
             - containerPort: 8086
 ---
