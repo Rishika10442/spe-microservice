@@ -50,14 +50,14 @@
     - name: Deploy MySQL
       shell: kubectl apply -f {{ k8s_folder }}/mysql.yaml
 
-    - name: Wait for MySQL pod to be ready
-      shell: |
-        kubectl wait --for=condition=ready pod -l app=mysql --timeout=120s
-      register: mysql_wait
-      retries: 3
-      delay: 10
-      until: mysql_wait.rc == 0
-
+#    - name: Wait for MySQL pod to be ready
+#      shell: |
+#        kubectl wait --for=condition=ready pod -l app=mysql --timeout=120s
+#      register: mysql_wait
+#      retries: 3
+#      delay: 10
+#      until: mysql_wait.rc == 0
+#
 
 
     - name: Apply Logstash config map
