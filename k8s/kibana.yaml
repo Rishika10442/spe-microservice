@@ -20,6 +20,8 @@ spec:
           env:
             - name: ELASTICSEARCH_HOSTS
               value: "http://elasticsearch:9200"
+            - name: XPACK_SECURITY_ENABLED
+              value: "false"
 ---
 apiVersion: v1
 kind: Service
@@ -31,5 +33,5 @@ spec:
   ports:
     - port: 5601
       targetPort: 5601
-      nodePort: 30002  # Changed from 30001 to 30002
+      nodePort: 30002
   type: NodePort
