@@ -1,12 +1,12 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: borrow_service
+  name: borrow-service
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: borrow_service
+      app: borrow-service
   template:
     metadata:
       labels:
@@ -21,10 +21,10 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: borrow_service
+  name: borrow-service
 spec:
   selector:
-    app: borrow_service
+    app: borrow-service
   ports:
   - port: 8084
     targetPort: 8084
