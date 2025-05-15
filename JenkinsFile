@@ -101,32 +101,32 @@ pipeline {
                 }
             }
         }
-
-      stage('Build and Push Docker Images') {
-          steps {
-              script {
-                  def services = [
-                      [name: 'catalogue-service', port: '8082'],
-                      [name: 'user-service', port: '8000'],
-                      [name: 'order_service', port: '8086'],
-                      [name: 'borrow_service', port: '8084'],
-                      [name: 'review_serivce', port: '8085'],
-                      [name: 'gateway-service', port: '8081']
-                  ]
-
-                  services.each { svc ->
-                      def imageName = "${DOCKERHUB_USERNAME}/${svc.name}:latest"
-                      echo "Building and pushing ${svc.name} as ${imageName}"
-
-                      dir(svc.name) {
-                          sh "mvn clean package -DskipTests"
-                          sh "docker build -t ${imageName} ."
-                          sh "docker push ${imageName}"
-                      }
-                  }
-              }
-          }
-      }
+//
+//       stage('Build and Push Docker Images') {
+//           steps {
+//               script {
+//                   def services = [
+//                       [name: 'catalogue-service', port: '8082'],
+//                       [name: 'user-service', port: '8000'],
+//                       [name: 'order_service', port: '8086'],
+//                       [name: 'borrow_service', port: '8084'],
+//                       [name: 'review_serivce', port: '8085'],
+//                       [name: 'gateway-service', port: '8081']
+//                   ]
+//
+//                   services.each { svc ->
+//                       def imageName = "${DOCKERHUB_USERNAME}/${svc.name}:latest"
+//                       echo "Building and pushing ${svc.name} as ${imageName}"
+//
+//                       dir(svc.name) {
+//                           sh "mvn clean package -DskipTests"
+//                           sh "docker build -t ${imageName} ."
+//                           sh "docker push ${imageName}"
+//                       }
+//                   }
+//               }
+//           }
+//       }
 //             stage('Build and Push Docker Image: Gateway Only') {
 //                 steps {
 //                     script {
