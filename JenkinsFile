@@ -1,3 +1,71 @@
+// pipeline {
+//     agent any
+//
+//     environment {
+//         DOCKERHUB_USERNAME = 'rishika10442'
+//     }
+//
+//     stages {
+//         stage('Clone Infra Repo') {
+//             steps {
+//                 git branch: 'main',
+//                     url: 'https://github.com/Rishika10442/spe-microservice.git',
+//                     credentialsId: 'github-token'
+//             }
+//         }
+//
+//         stage('Verify Checkout') {
+//             steps {
+//                 sh 'ls -la'
+//             }
+//         }
+//         stage('Check Maven Version') {
+//             steps {
+//                 sh 'mvn -version'
+//             }
+//         }
+//
+//         stage('Login to Docker Hub') {
+//             steps {
+//                 withCredentials([usernamePassword(credentialsId: 'docker-hub-credentials', usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASS')]) {
+//                     sh "echo $DOCKER_PASS | docker login -u $DOCKER_USER --password-stdin"
+//                 }
+//             }
+//         }
+//
+//         stage('Build and Push Docker Images') {
+//             steps {
+//                 script {
+//                     def services = [
+//                         [name: 'catalogue-service', port: '8082'],
+//                         [name: 'user-service', port: '8000'],
+//                         [name: 'order_service', port: '8086'],
+//                         [name: 'borrow_service', port: '8084'],
+//                         [name: 'review_serivce', port: '8085'],
+//                         [name: 'gateway-service', port: '8081']
+//                     ]
+//
+//                     services.each { svc ->
+//                         def imageName = "${DOCKERHUB_USERNAME}/${svc.name}:latest"
+//                         echo "Building ${svc.name} as ${imageName}"
+//
+//                         dir("${svc.name}") {
+//                             // Ensure the JAR is built
+//                             sh "mvn clean package -DskipTests"
+//
+//                             // Build Docker image
+//                             sh "docker build -t ${imageName} ."
+//
+//                             // Push to Docker Hub
+//                             sh "docker push ${imageName}"
+//                         }
+//                     }
+//                 }
+//             }
+//         }
+//     }
+// }
+
 pipeline {
     agent any
 
@@ -19,6 +87,7 @@ pipeline {
                 sh 'ls -la'
             }
         }
+
         stage('Check Maven Version') {
             steps {
                 sh 'mvn -version'
@@ -47,19 +116,34 @@ pipeline {
 
                     services.each { svc ->
                         def imageName = "${DOCKERHUB_USERNAME}/${svc.name}:latest"
-                        echo "Building ${svc.name} as ${imageName}"
+                        def servicePath = "${svc.name}"
 
-                        dir("${svc.name}") {
-                            // Ensure the JAR is built
-                            sh "mvn clean package -DskipTests"
+                        // Check if there are changes in the service folder
+                        def changed = sh(
+                            script: "git diff --quiet origin/main HEAD -- ${servicePath} || echo changed",
+                            returnStdout: true
+                        ).trim()
 
-                            // Build Docker image
-                            sh "docker build -t ${imageName} ."
+                        if (changed == "changed") {
+                            echo "Changes detected in ${svc.name}, building..."
 
-                            // Push to Docker Hub
-                            sh "docker push ${imageName}"
+                            dir(servicePath) {
+                                sh "mvn clean package -DskipTests"
+                                sh "docker build -t ${imageName} ."
+                                sh "docker push ${imageName}"
+                            }
+                        } else {
+                            echo "No changes in ${svc.name}, skipping build & push."
                         }
                     }
+                }
+            }
+        }
+
+        stage('Deploy to Kubernetes via Ansible') {
+            steps {
+                dir('ansible') {
+                    sh 'ansible-playbook deploy.yml'
                 }
             }
         }

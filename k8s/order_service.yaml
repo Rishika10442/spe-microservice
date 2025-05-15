@@ -1,0 +1,31 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: order_service
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: order_service
+  template:
+    metadata:
+      labels:
+        app: order_service
+    spec:
+      containers:
+        - name: user
+          image: rishika10442/order_service:latest
+          ports:
+            - containerPort: 8086
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: order_service
+spec:
+  selector:
+    app: order_service
+  ports:
+    - port: 8086
+      targetPort: 8086
+  type: ClusterIP
