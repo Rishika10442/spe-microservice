@@ -48,11 +48,13 @@ public class UserService implements UserDetailsService {
 
         // Generate JWT token after signup
         String token = jwtHelper.generateToken(request.email());
+        int userId = user.getUserId();
 
         // Return JSON response with success flag and token
         return Map.of(
                 "success", true,
                 "token", token,
+                "userId",userId,
                 "message", "User created and logged in successfully."
         );
     }
@@ -64,23 +66,26 @@ public class UserService implements UserDetailsService {
         return new CustomUserDetails(user); // Wrapping Customer in CustomUserDetails
     }
 
-    public String login(LoginRequest request) {
+    public Map<String, Object> login(LoginRequest request) {
         User user =repo.findByEmail(request.email())
                 .orElseThrow(() -> new UsernameNotFoundException("Employee not found with email: " + request.email()));
         boolean matches = passwordEncoder.matches(request.password(), user.getEncryptedpassword());
 
         if(!matches){
-            return "Wrong Password or Email";
+            return Map.of(
+                    "success", false,
+                    "message", "Wrong email or password."
+            );
         }
-        String token ="";
+        String token =jwtHelper.generateToken(request.email());
+        int userId=user.getUserId();
 
-
-        token=jwtHelper.generateToken(request.email());
-        return token;
-
-
-        // return token;
-
+        return Map.of(
+                "success", true,
+                "token", token,
+                "userId",userId,
+                "message", "User created and logged in successfully."
+        );
     }
 }
 

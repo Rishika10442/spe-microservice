@@ -19,12 +19,12 @@
         k8s_name: review-serivce
       - image_name: gateway-service
         k8s_name: gateway-service
-      - image_name: elasticsearch
-        k8s_name: elasticsearch
-      - image_name: logstash
-        k8s_name: logstash
-      - image_name: kibana
-        k8s_name: kibana
+#      - image_name: elasticsearch
+#        k8s_name: elasticsearch
+#      - image_name: logstash
+#        k8s_name: logstash
+#      - image_name: kibana
+#        k8s_name: kibana
 
   tasks:
     - name: Check if Minikube is running
@@ -62,6 +62,19 @@
 
     - name: Apply Logstash config map
       shell: kubectl apply -f {{ k8s_folder }}/logstash-config.yaml
+
+    - name: Deploy Logstash
+      shell: kubectl apply -f {{ k8s_folder }}/logstash.yaml
+
+    - name: Deploy Elasticsearch
+      shell: kubectl apply -f {{ k8s_folder }}/elasticsearch.yaml
+
+    - name: Deploy Kibana
+      shell: kubectl apply -f {{ k8s_folder }}/kibana.yaml
+
+    - name: Apply Filebeat DaemonSet
+      shell: kubectl apply -f {{ k8s_folder }}/filebeat.yaml
+
 
 
     - name: Apply Kubernetes YAML manifests per service
