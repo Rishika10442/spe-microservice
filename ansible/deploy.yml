@@ -60,17 +60,17 @@
 #
 
 
-    - name: Apply Logstash config map
-      shell: kubectl apply -f {{ k8s_folder }}/logstash-config.yaml
-
-    - name: Deploy Logstash
-      shell: kubectl apply -f {{ k8s_folder }}/logstash.yaml
-
-    - name: Deploy Elasticsearch
-      shell: kubectl apply -f {{ k8s_folder }}/elasticsearch.yaml
-
-    - name: Deploy Kibana
-      shell: kubectl apply -f {{ k8s_folder }}/kibana.yaml
+#    - name: Apply Logstash config map
+#      shell: kubectl apply -f {{ k8s_folder }}/logstash-config.yaml
+#
+#    - name: Deploy Logstash
+#      shell: kubectl apply -f {{ k8s_folder }}/logstash.yaml
+#
+#    - name: Deploy Elasticsearch
+#      shell: kubectl apply -f {{ k8s_folder }}/elasticsearch.yaml
+#
+#    - name: Deploy Kibana
+#      shell: kubectl apply -f {{ k8s_folder }}/kibana.yaml
 
     - name: Apply Filebeat DaemonSet
       shell: kubectl apply -f {{ k8s_folder }}/filebeat.yaml
