@@ -86,6 +86,6 @@
 
 
 
-    - name: Restart deployments to pull new images
-      shell: kubectl rollout restart deployment/{{ item.k8s_name }}
-      loop: "{{ services }}"
+#    - name: Restart deployments to pull new images
+#      shell: kubectl rollout restart deployment/{{ item.k8s_name }}
+#      loop: "{{ services }}"
