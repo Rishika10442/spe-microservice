@@ -7,18 +7,20 @@ metadata:
 data:
   filebeat.yml: |
     filebeat.inputs:
-      - type: container
+      - type: log
+        enabled: true
         paths:
-          - /var/lib/docker/containers/*/*.log
+          - /var/lib/docker/containers/*/*-json.log
         json.keys_under_root: true
         json.add_error_key: true
+        processors:
+          - add_docker_metadata: ~
 
     output.logstash:
       hosts: ["logstash:5044"]
 
     processors:
       - add_cloud_metadata: ~
-      - add_docker_metadata: ~
 
 ---
 apiVersion: v1
