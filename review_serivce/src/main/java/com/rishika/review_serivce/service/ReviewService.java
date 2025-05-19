@@ -29,6 +29,8 @@ public class ReviewService {
     public Map<String, Object> addReview(Long userId, Long bookId, String reviewText, Integer rating,String title, String jwtToken) {
         String USER_SERVICE_URL = "http://user-service:8000/user/";
          String BOOK_SERVICE_URL = "http://catalogue-service:8082/catalogue/booksById/";
+//        String USER_SERVICE_URL = "http://localhost:8081/user/";
+//        String BOOK_SERVICE_URL = "http://localhost:8081//catalogue/booksById/";
         Map<String, Object> response = new HashMap<>();
         HttpHeaders headers = new HttpHeaders();
         headers.set("Authorization", jwtToken);

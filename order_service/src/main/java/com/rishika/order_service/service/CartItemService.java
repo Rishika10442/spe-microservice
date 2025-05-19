@@ -35,6 +35,7 @@ public class CartItemService {
     public Map<String, Object> addToCart(Long userId, Long bookId,String jwtToken) {
         Map<String, Object> response = new HashMap<>();
         String CATALOG_SERVICE_URL="http://catalogue-service:8082/catalogue/price/";
+      //  String CATALOG_SERVICE_URL="http://localhost:8081/catalogue/price/";
         logger.info("jwt token{}",jwtToken);
         try {
             // Step 1: Prepare HTTP headers and add the Authorization token
@@ -193,7 +194,7 @@ public class CartItemService {
     public Map<String, Object> getCartItems(Long userId, String jwtToken) {
         Map<String, Object> response = new HashMap<>();
         String CATALOG_SERVICE_URL = "http://catalogue-service:8082/catalogue/book-details/";
-
+      //  String CATALOG_SERVICE_URL = "http://localhost:8081/catalogue/book-details/";
         try {
             // Step 1: Get cart for user
             Optional<Cart> optionalCart = cartRepository.findByUserId(userId);

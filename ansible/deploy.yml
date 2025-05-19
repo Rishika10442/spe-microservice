@@ -83,6 +83,8 @@
       register: kubectl_apply
       failed_when: kubectl_apply.rc != 0 and 'already exists' not in kubectl_apply.stderr
 
+    - name: Restart user-service deployment to pull new image
+      shell: kubectl rollout restart deployment/user-service
 
 
 

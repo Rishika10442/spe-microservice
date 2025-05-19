@@ -127,26 +127,26 @@ pipeline {
 //               }
 //           }
 //       }
-//             stage('Build and Push Docker Image: Gateway Only') {
-//                 steps {
-//                     script {
-//                         def services = [
-//                             [name: 'user-service', port: '8000']
-//                         ]
-//
-//                         services.each { svc ->
-//                             def imageName = "${DOCKERHUB_USERNAME}/${svc.name}:latest"
-//                             echo "Building and pushing ${svc.name} as ${imageName}"
-//
-//                             dir(svc.name) {
-//                                 sh "mvn clean package -DskipTests"
-//                                 sh "docker build -t ${imageName} ."
-//                                 sh "docker push ${imageName}"
-//                             }
-//                         }
-//                     }
-//                 }
-//             }
+            stage('Build and Push Docker Image: Gateway Only') {
+                steps {
+                    script {
+                        def services = [
+                            [name: 'user-service', port: '8000']
+                        ]
+
+                        services.each { svc ->
+                            def imageName = "${DOCKERHUB_USERNAME}/${svc.name}:latest"
+                            echo "Building and pushing ${svc.name} as ${imageName}"
+
+                            dir(svc.name) {
+                                sh "mvn clean package -DskipTests"
+                                sh "docker build -t ${imageName} ."
+                                sh "docker push ${imageName}"
+                            }
+                        }
+                    }
+                }
+            }
 
 //as
 
